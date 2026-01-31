@@ -1,5 +1,5 @@
 import {Select} from "../../../controls/Select.tsx";
-import { useFormContext, type UseFormReturn } from "react-hook-form";
+import {useFormContext, type UseFormReturn, useFormState} from "react-hook-form";
 
 type CheckoutFormType = {
   delivery: CheckoutType
@@ -19,7 +19,8 @@ export const CheckoutForm = () => {
     { value: 180, label: '3 Hours' },
   ];
 
-  const {register, formState:{errors}}: UseFormReturn<CheckoutFormType> = useFormContext<CheckoutFormType>();
+  const { register }: UseFormReturn<CheckoutFormType> = useFormContext<CheckoutFormType>();
+  const { errors } = useFormState<CheckoutFormType>({ name: 'delivery' });
   const err = errors.delivery;
 
   return (<>

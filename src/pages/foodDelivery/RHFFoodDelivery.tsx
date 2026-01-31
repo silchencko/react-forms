@@ -24,7 +24,7 @@ export default function RHFFoodDelivery () {
       }
     }
   });
-  const { handleSubmit, formState: {isValid, isSubmitting} } = methods;
+  const { handleSubmit, control } = methods;
 
   const onSubmit = async (data: FoodDeliveryType) => {
     await new Promise(resolve => setTimeout(resolve, 3000));
@@ -44,7 +44,7 @@ export default function RHFFoodDelivery () {
         <AddressForm />
       </FormProvider>
 
-      <SubmitButton isSubmitting={isSubmitting} isValid={isValid}>Submit</SubmitButton>
+      <SubmitButton control={control}>Submit</SubmitButton>
     </form>
   )
 }

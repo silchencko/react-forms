@@ -1,17 +1,25 @@
 import { TextField } from "../../../controls/TextField.tsx";
-import { useFormContext, type UseFormReturn } from "react-hook-form";
+import {useFormContext, type UseFormReturn, useFormState} from "react-hook-form";
+import {useEffect} from "react";
 
 type AddressFormType = {
   address: AddressType
 }
 
 export const AddressForm = () => {
-  const { register, formState: {errors}}: UseFormReturn<AddressFormType> = useFormContext<AddressFormType>()
+  const { register, getFieldState }: UseFormReturn<AddressFormType> = useFormContext<AddressFormType>()
+  const { errors } = useFormState<AddressFormType>({ name: 'address' });
   const err = errors.address;
+
+  useEffect(() => {
+    console.log('Address field state: ', getFieldState('address').error ?
+      Object.values(getFieldState('address').error).map(e => e.message)
+      : []);
+  }, [err]);
   return (<>
     <div className="text-start fw-bold mt-4 mb-2">Delivery Address</div>
 
-      <div className="row mb-3">
+    <div className="row mb-3">
         <div className="col">
           <TextField
             label="Street Address"
@@ -29,7 +37,7 @@ export const AddressForm = () => {
             })}/>
         </div>
       </div>
-      <div className="row mb-3">
+    <div className="row mb-3">
         <div className="col">
           <TextField
             label="Landmark"
@@ -43,5 +51,7 @@ export const AddressForm = () => {
             {...register('address.state')}/>
         </div>
       </div>
+
+    <p className="text-danger">{getFieldState('address').invalid && 'Address is invalid'}</p>
   </>)
 }

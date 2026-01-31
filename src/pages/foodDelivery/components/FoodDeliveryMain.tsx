@@ -1,8 +1,9 @@
 import {TextField} from "../../../controls/TextField.tsx";
-import { useFormContext, type UseFormReturn } from "react-hook-form";
+import {useFormContext, type UseFormReturn, useFormState} from "react-hook-form";
 
 export const FoodDeliveryMain = () => {
-  const { register, formState: {errors} }: UseFormReturn<FoodDeliveryMainType> = useFormContext<FoodDeliveryMainType>();
+  const { register }: UseFormReturn<FoodDeliveryMainType> = useFormContext<FoodDeliveryMainType>();
+  const { errors } = useFormState<FoodDeliveryMainType>({ name: ['orderNo', 'name', 'mobile', 'email'] });
 
   return (<>
   <div className="row mb-3">
