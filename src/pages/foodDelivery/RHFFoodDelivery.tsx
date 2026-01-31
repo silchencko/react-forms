@@ -12,6 +12,11 @@ export default function RHFFoodDelivery () {
       name: '',
       mobile: '',
       email: '',
+      sameReceiver: true,
+      otherReceiver: {
+        name: '',
+        mobile: '',
+      },
       delivery: {
         paymentMethod: '',
         deliveryIn: 0,

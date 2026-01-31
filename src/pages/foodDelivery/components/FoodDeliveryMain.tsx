@@ -1,37 +1,42 @@
 import {TextField} from "../../../controls/TextField.tsx";
 import {useFormContext, type UseFormReturn, useFormState} from "react-hook-form";
+import {OtherReceiver} from "./OtherReceiver.tsx";
 
 export const FoodDeliveryMain = () => {
-  const { register }: UseFormReturn<FoodDeliveryMainType> = useFormContext<FoodDeliveryMainType>();
-  const { errors } = useFormState<FoodDeliveryMainType>({ name: ['orderNo', 'name', 'mobile', 'email'] });
+  const { register, watch }: UseFormReturn<FoodDeliveryMainType> = useFormContext<FoodDeliveryMainType>();
+  const { errors } = useFormState<FoodDeliveryMainType>({ name:
+      ['orderNo', 'name', 'mobile', 'email', 'sameReceiver']
+  });
+
+  const hideOtherReceiver = watch('sameReceiver');
 
   return (<>
-  <div className="row mb-3">
-    <div className="col">
-      <TextField
-        disabled={true}
-        label="Order No"
-        {...register('orderNo')}
-      />
-    </div>
-    <div className="col">
-      <div className="form-floating">
+    <div className="row mb-3">
+      <div className="col">
         <TextField
-          label="Phone Number"
-          error={errors.mobile}
-          {...register('mobile', {
-            required: 'Phone number is required',
-            minLength: { value: 10, message: "Phone number has to be 10 elements long"},
-            maxLength: { value: 10, message: "Phone number has to be 10 elements long"},
-            pattern: { value: /^\d+$/, message: 'Phone number must contain only numbers' },
-            validate: {
-              hasCode: (value: string) => value.startsWith('380') || 'Phone number must starts from 380 code'
-            }
-          })}
+          disabled={true}
+          label="Order No"
+          {...register('orderNo')}
         />
       </div>
+      <div className="col">
+        <div className="form-floating">
+          <TextField
+            label="Phone Number"
+            error={errors.mobile}
+            {...register('mobile', {
+              required: 'Phone number is required',
+              minLength: { value: 10, message: "Phone number has to be 10 elements long"},
+              maxLength: { value: 10, message: "Phone number has to be 10 elements long"},
+              pattern: { value: /^\d+$/, message: 'Phone number must contain only numbers' },
+              validate: {
+                hasCode: (value: string) => value.startsWith('380') || 'Phone number must starts from 380 code'
+              }
+            })}
+          />
+        </div>
+      </div>
     </div>
-  </div>
     <div className="row mb-3">
       <div className="col">
         <TextField
@@ -53,5 +58,12 @@ export const FoodDeliveryMain = () => {
         />
       </div>
     </div>
+    <div className="form-check text-start mb-3">
+      <input className="form-check-input" type="checkbox" {...register('sameReceiver')} id="sameRecaiver" />
+      <label htmlFor="sameRecaiver">
+        I'm receiving the order
+      </label>
+    </div>
+      {!hideOtherReceiver && (<OtherReceiver />)}
   </>)
 }

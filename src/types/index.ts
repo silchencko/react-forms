@@ -3,11 +3,18 @@ type SelectOptionType<OptionValue> = {
   label: string;
 }
 
+type OtherReceiverType = {
+  name: string;
+  mobile: string;
+}
+
 type FoodDeliveryMainType = {
   orderNo: number;
   name: string;
   mobile: string;
   email: string;
+  sameReceiver: boolean;
+  otherReceiver: OtherReceiverType;
 }
 
 type CheckoutType = {
