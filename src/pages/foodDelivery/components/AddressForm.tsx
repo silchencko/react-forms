@@ -11,11 +11,10 @@ export const AddressForm = () => {
   const { errors } = useFormState<AddressFormType>({ name: 'address' });
   const err = errors.address;
 
-  useEffect(() => {
-    console.log('Address field state: ', getFieldState('address').error ?
-      Object.values(getFieldState('address').error).map(e => e.message)
-      : []);
-  }, [err]);
+  // useEffect(() => {
+  //   Object.values(getFieldState('address').error).map(e => e.message)
+  //     : []);
+  // }, [err]);
   return (<>
     <div className="text-start fw-bold mt-4 mb-2">Delivery Address</div>
 

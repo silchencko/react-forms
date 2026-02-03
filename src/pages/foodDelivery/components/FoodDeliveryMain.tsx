@@ -1,14 +1,14 @@
 import {TextField} from "../../../controls/TextField.tsx";
-import {useFormContext, type UseFormReturn, useFormState} from "react-hook-form";
+import {useFormContext, type UseFormReturn, useFormState, useWatch} from "react-hook-form";
 import {OtherReceiver} from "./OtherReceiver.tsx";
 
 export const FoodDeliveryMain = () => {
-  const { register, watch }: UseFormReturn<FoodDeliveryMainType> = useFormContext<FoodDeliveryMainType>();
+  const { register }: UseFormReturn<FoodDeliveryMainType> = useFormContext<FoodDeliveryMainType>();
   const { errors } = useFormState<FoodDeliveryMainType>({ name:
       ['orderNo', 'name', 'mobile', 'email', 'sameReceiver']
   });
 
-  const hideOtherReceiver = watch('sameReceiver');
+  const hideOtherReceiver = useWatch({ name: 'sameReceiver' });
 
   return (<>
     <div className="row mb-3">

@@ -1,5 +1,6 @@
 import {Select} from "../../../controls/Select.tsx";
-import {useFormContext, type UseFormReturn, useFormState} from "react-hook-form";
+import {useFormContext, type UseFormReturn, useFormState, useWatch} from "react-hook-form";
+import {useEffect} from "react";
 
 type CheckoutFormType = {
   delivery: CheckoutType
@@ -22,6 +23,14 @@ export const CheckoutForm = () => {
   const { register }: UseFormReturn<CheckoutFormType> = useFormContext<CheckoutFormType>();
   const { errors } = useFormState<CheckoutFormType>({ name: 'delivery' });
   const err = errors.delivery;
+
+  // const deliveryWarning = watch('delivery.deliveryIn') === '180' ? 'Delivery is out working hours. We will deliver next day at 8 am.' : '';
+  const deliveryWarning = useWatch({
+    name: 'delivery.deliveryIn',
+    compute: (deliveryIn: string) => {
+      return deliveryIn === '180' ? 'Delivery is out working hours. We will deliver next day at 8 am.' : '';
+    },
+  });
 
   return (<>
     <div className="text-start fw-bold mt-4 mb-2">Checkout details</div>
@@ -51,5 +60,6 @@ export const CheckoutForm = () => {
           />
         </div>
       </div>
+    <p>{deliveryWarning}</p>
   </>)
 }
