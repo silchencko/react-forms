@@ -3,6 +3,7 @@ import {CheckoutForm} from "./components/CheckoutForm.tsx";
 import {AddressForm} from "./components/AddressForm.tsx";
 import {FoodDeliveryMain} from "./components/FoodDeliveryMain.tsx";
 import {SubmitButton} from "../../controls/SubmitButton.tsx";
+import {OrderFoodItems} from "./components/OrderFoodItems.tsx";
 
 export default function RHFFoodDelivery () {
   const methods: UseFormReturn<FoodDeliveryType> = useForm<FoodDeliveryType>({
@@ -17,6 +18,9 @@ export default function RHFFoodDelivery () {
         name: '',
         mobile: '',
       },
+      foodItems: [
+        { name: '', quantity: 1 },
+      ],
       delivery: {
         paymentMethod: '',
         deliveryIn: 0,
@@ -45,6 +49,7 @@ export default function RHFFoodDelivery () {
 
       <FormProvider {...methods}>
         <FoodDeliveryMain />
+        <OrderFoodItems />
         <CheckoutForm />
         <AddressForm />
       </FormProvider>

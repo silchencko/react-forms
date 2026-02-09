@@ -1,6 +1,5 @@
 import {Select} from "../../../controls/Select.tsx";
 import {useFormContext, type UseFormReturn, useFormState, useWatch} from "react-hook-form";
-import {useEffect} from "react";
 
 type CheckoutFormType = {
   delivery: CheckoutType

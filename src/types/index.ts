@@ -29,7 +29,13 @@ type AddressType = {
   state: string,
 }
 
+type OrderFoodItemType = {
+  name: string;
+  quantity: number;
+}
+
 type FoodDeliveryType = {
+  foodItems: OrderFoodItemType[];
   address: AddressType;
   delivery: CheckoutType;
 } & FoodDeliveryMainType

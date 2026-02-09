@@ -21,3 +21,14 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+[data-tooltip]:hover::after {
+  display: block;
+  position: absolute;
+  content: attr(data-tooltip);
+  border-radius: 5px;
+  background: #eee;
+  padding: .25em;
+  opacity: 0.8;
+  color: #242424;
+}

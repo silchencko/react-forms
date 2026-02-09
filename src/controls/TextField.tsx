@@ -3,7 +3,7 @@ import type {FieldError} from "react-hook-form";
 
 type TextFieldProps =  React.InputHTMLAttributes<HTMLInputElement> & {
   type: string;
-  label: string;
+  label?: string;
   className?: string;
   error?: FieldError;
 }
@@ -16,7 +16,7 @@ export const TextField = forwardRef((props: TextFieldProps , ref: ForwardedRef<H
     ...other
   } = props
   return (
-    <div className="form-floating">
+    <div className={label ? "form-floating": ""}>
       <input
         type={type}
         className={`form-control ${className}`}
@@ -24,11 +24,9 @@ export const TextField = forwardRef((props: TextFieldProps , ref: ForwardedRef<H
         {...other}
         ref={ref}
       />
-      <label>{label}</label>
-      {
-        error &&
-        <p className="small text-danger">{error.message}</p>
-      }
+      {label && <label>{label}</label>}
+      {other.required && '*'}
+      {error && <p className="small text-danger">{error.message}</p>}
     </div>
   )
 })
