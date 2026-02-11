@@ -15,6 +15,7 @@ type FoodDeliveryMainType = {
   email: string;
   sameReceiver: boolean;
   otherReceiver: OtherReceiverType;
+  checkTotal: number;
 }
 
 type CheckoutType = {

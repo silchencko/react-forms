@@ -32,3 +32,13 @@ body {
   opacity: 0.8;
   color: #242424;
 }
+
+#food {
+  max-width: 600px;
+  min-width: 600px;
+
+  & thead tr th:not(:first-child):not(:last-child) {
+    width: 15%;
+  }
+}
+

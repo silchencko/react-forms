@@ -12,8 +12,12 @@ import { TextField } from "../../../controls/TextField.tsx";
 import {ChangeEvent, useEffect, useState} from "react";
 import { loadFoodItems } from "../../../db";
 import { Select } from "../../../controls/Select.tsx";
+import { roundNumber } from "../../../utils.ts";
 
-type OrderFoodItemsFormType = {foodItems: OrderFoodItemType[]}
+type OrderFoodItemsFormType = {
+  checkTotal: number;
+  foodItems: OrderFoodItemType[]
+}
 export const OrderFoodItems = () => {
   const [ foodList, setFoodItems ] = useState<FoodItemType[]>([]);
   const [ foodOptions, setFoodOptions ] = useState<SelectOptionType<string>[]>([]);
@@ -41,7 +45,18 @@ export const OrderFoodItems = () => {
       }
     }});
 
-  useWatch<OrderFoodItemsFormType>({ name: 'foodItems' });
+  const selectedFoodItems: OrderFoodItemType[] = useWatch({
+    name: 'foodItems'
+  });
+  useWatch({ name: 'checkTotal' });
+
+  useEffect(() => updateCheckTotal(), [selectedFoodItems]);
+
+  const updateCheckTotal = () => {
+    const check = selectedFoodItems.reduce((total, item) => total + item.totalPrice, 0);
+    const total = roundNumber(check);
+    setValue('checkTotal', total);
+  }
 
   const onAppend = () => {
     append({ foodId: 0, price: 0, quantity: 1, totalPrice: 0});
@@ -59,18 +74,18 @@ export const OrderFoodItems = () => {
     const { price, quantity } = getValues(`foodItems.${rawIndex}`)
     let totalPrice = 0;
     if (quantity && quantity > 0) totalPrice = price * quantity;
-    const roundedPrice = Math.round((totalPrice + Number.EPSILON) * 100) / 100;
+    const roundedPrice = roundNumber(totalPrice);
     setValue(`foodItems.${rawIndex}.totalPrice`, roundedPrice);
   }
 
   return (<>
-      <table className="table table-dorderless table-hover">
+      <table id="food" className="table table-dorderless table-hover">
         <thead>
           <tr>
             <td>Food Item</td>
-            <td>Price</td>
+            <td className="text-start">Price</td>
             <td>Quantity</td>
-            <td>Total Price</td>
+            <td className="text-start">Tot.Price</td>
             <td></td>
           </tr>
         </thead>
@@ -91,7 +106,7 @@ export const OrderFoodItems = () => {
                   })}
               />
               </td>
-              <td>{"$" + getValues(`foodItems.${index}.price`)}</td>
+              <td className="text-start align-middle">{"$" + getValues(`foodItems.${index}.price`)}</td>
               <td>
                  <TextField
                   type="number"
@@ -105,7 +120,7 @@ export const OrderFoodItems = () => {
                   onBlur={() => trigger(`foodItems`)}
                   error={errors.foodItems?.[index]?.quantity}/>
               </td>
-              <td>{"$" + getValues(`foodItems.${index}.totalPrice`)}</td>
+              <td className="text-start align-middle">{"$" + getValues(`foodItems.${index}.totalPrice`)}</td>
               <td>
                 {fields.length > 1 && (
                   <button className="btn btn-sm btn-outline-danger" data-tooltip="Remove" onClick={() => remove(index)}>
@@ -117,6 +132,14 @@ export const OrderFoodItems = () => {
           ))}
         </tbody>
         <tfoot>
+          {fields.length > 1 && (
+            <tr className="border-top">
+              <td colSpan="2"></td>
+              <td>Total</td>
+              <td className="text-start align-middle">{'$' + getValues('checkTotal')}</td>
+              <td></td>
+            </tr>
+          )}
           {errors.foodItems?.root && (<tr>
             <td colSpan={5} className="text-center">
               <p className="small text-danger">{errors.foodItems?.root?.message}</p>
