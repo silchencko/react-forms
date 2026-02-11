@@ -2,7 +2,7 @@ import { forwardRef, ForwardedRef} from 'react';
 import type {FieldError} from "react-hook-form";
 
 type SelectProps =  React.SelectHTMLAttributes<HTMLSelectElement> & {
-  label: string;
+  label?: string;
   error?: FieldError;
   className?: string;
   options: SelectOptionType[];
@@ -16,7 +16,7 @@ export const Select = forwardRef((props: SelectProps, ref: ForwardedRef<HTMLSele
     ...other
   } = props
   return (
-    <div className="form-floating">
+    <div className={label ? "form-floating" : ""}>
       <select
         className={`form-select ${className}`}
         {...other}
@@ -26,7 +26,7 @@ export const Select = forwardRef((props: SelectProps, ref: ForwardedRef<HTMLSele
           <option value={option.value} key={index}>{option.label}</option>
         ))}
       </select>
-      <label>{label}</label>
+      { label && (<label>{label}</label>)}
       {
         error &&
         <p className="small text-danger">{error.message}</p>

@@ -50,9 +50,10 @@ export const CheckoutForm = () => {
             label="Delivery Within"
             options={deliveryInOptions}
             {...register('delivery.deliveryIn', {
+              valueAsNumber: true,
               required: 'Delivery time is required',
               validate: {
-                notZero: (value: number) => (value !== 0 && value !== '0') || 'Please select delivery time'
+                min: (value: number) => value > 0 || 'Please select delivery time',
               }
             })}
             error={err?.deliveryIn}

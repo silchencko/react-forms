@@ -19,7 +19,7 @@ export default function RHFFoodDelivery () {
         mobile: '',
       },
       foodItems: [
-        { name: '', quantity: 1 },
+        { foodId: 0, price: 0, quantity: 1, totalPrice: 0 },
       ],
       delivery: {
         paymentMethod: '',

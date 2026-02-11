@@ -2,16 +2,30 @@ import {
   useFormContext,
   useFormState,
   useFieldArray,
+  useWatch,
   type UseFormReturn,
   type UseFormStateReturn,
   type UseFieldArrayReturn,
   type FieldArrayPath
 } from "react-hook-form";
 import { TextField } from "../../../controls/TextField.tsx";
+import {ChangeEvent, useEffect, useState} from "react";
+import { loadFoodItems } from "../../../db";
+import { Select } from "../../../controls/Select.tsx";
 
 type OrderFoodItemsFormType = {foodItems: OrderFoodItemType[]}
 export const OrderFoodItems = () => {
-  const { register, trigger }: UseFormReturn<OrderFoodItemsFormType> = useFormContext<OrderFoodItemsFormType>();
+  const [ foodList, setFoodItems ] = useState<FoodItemType[]>([]);
+  const [ foodOptions, setFoodOptions ] = useState<SelectOptionType<string>[]>([]);
+
+  useEffect(() => {
+    const fList = loadFoodItems();
+    setFoodItems(fList)
+    const options = fList.map(item => ({ value: item.foodId, label: item.name }));
+    setFoodOptions([{value: 0, label: 'Select'}, ...options]);
+  }, []);
+
+  const { register, trigger, getValues, setValue}: UseFormReturn<OrderFoodItemsFormType> = useFormContext<OrderFoodItemsFormType>();
   const { errors }: UseFormStateReturn<OrderFoodItemsFormType> = useFormState<OrderFoodItemsFormType>({ name: "foodItems" });
   const {
     fields,
@@ -24,18 +38,29 @@ export const OrderFoodItems = () => {
       minLength: {
         value: 2,
         message: "The minimum order is 2"
-      },
-      validate: {
-        noDuplicates: (value, values) => {
-          const names = values.foodItems.map(item => item.name.trim().toLowerCase());
-          const hasDuplicates = names.some((name, index) => names.indexOf(name) !== index);
-          return !hasDuplicates || 'Food items must be unique';
-        }
       }
     }});
 
+  useWatch<OrderFoodItemsFormType>({ name: 'foodItems' });
+
   const onAppend = () => {
-    append({ name: "", quantity: 1});
+    append({ foodId: 0, price: 0, quantity: 1, totalPrice: 0});
+  }
+
+  const onFoodChange = (event: ChangeEvent<HTMLSelectElement>, rawIndex: number) => {
+    const foodId = parseInt(event.target.value);
+    const price = foodId == 0 ? 0 :
+      foodList.find(food => food.foodId == foodId)?.price || 0;
+    setValue(`foodItems.${rawIndex}.price`, price);
+    updateTotalPrice(rawIndex);
+  }
+
+  const updateTotalPrice = (rawIndex: number) => {
+    const { price, quantity } = getValues(`foodItems.${rawIndex}`)
+    let totalPrice = 0;
+    if (quantity && quantity > 0) totalPrice = price * quantity;
+    const roundedPrice = Math.round((totalPrice + Number.EPSILON) * 100) / 100;
+    setValue(`foodItems.${rawIndex}.totalPrice`, roundedPrice);
   }
 
   return (<>
@@ -43,7 +68,9 @@ export const OrderFoodItems = () => {
         <thead>
           <tr>
             <td>Food Item</td>
+            <td>Price</td>
             <td>Quantity</td>
+            <td>Total Price</td>
             <td></td>
           </tr>
         </thead>
@@ -51,25 +78,34 @@ export const OrderFoodItems = () => {
           {fields.map((field, index) =>(
             <tr key={field.id}>
               <td>
-                <TextField
-                  {...register(`foodItems.${index}.name` as const, {
-                    required: 'Food item name is required'
-                  })}
+                <Select
+                  options={foodOptions}
                   onBlur={() => trigger(`foodItems`)}
-                  error={errors.foodItems?.[index]?.name}/>
+                  error={errors.foodItems?.[index]?.foodId}
+                  {...register(`foodItems.${index}.foodId`, {
+                    valueAsNumber: true,
+                    validate: {
+                      isRequired: (value: string) => value !== 0 || 'Please select a food item'
+                    },
+                    onChange: (e) => {onFoodChange(e, index)}
+                  })}
+              />
               </td>
+              <td>{"$" + getValues(`foodItems.${index}.price`)}</td>
               <td>
                  <TextField
                   type="number"
-                  min={1}
+                  min={0}
                   {...register(`foodItems.${index}.quantity` as const, {
-                    min: {
-                      value: 1,
-                      message: 'Quantity must be at least 1'
-                    }})}
+                    valueAsNumber: true,
+                    required: 'Minimum 1',
+                    min: (value: number) => value > 1 || 'Minimum 1',
+                    onChange: () => updateTotalPrice(index)
+                  })}
                   onBlur={() => trigger(`foodItems`)}
                   error={errors.foodItems?.[index]?.quantity}/>
               </td>
+              <td>{"$" + getValues(`foodItems.${index}.totalPrice`)}</td>
               <td>
                 {fields.length > 1 && (
                   <button className="btn btn-sm btn-outline-danger" data-tooltip="Remove" onClick={() => remove(index)}>
@@ -82,7 +118,7 @@ export const OrderFoodItems = () => {
         </tbody>
         <tfoot>
           {errors.foodItems?.root && (<tr>
-            <td colSpan={3} className="text-center">
+            <td colSpan={5} className="text-center">
               <p className="small text-danger">{errors.foodItems?.root?.message}</p>
             </td>
           </tr>)}
